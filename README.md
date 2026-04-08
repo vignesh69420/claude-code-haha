@@ -1,122 +1,122 @@
 # Claude Code Haha
 
-基于 Claude Code 泄露源码修复的**本地可运行版本**，支持接入任意 Anthropic 兼容 API（如 MiniMax、OpenRouter 等）。
+A **locally runnable version** based on a fix of the leaked Claude Code source, supporting any Anthropic-compatible API (such as MiniMax, OpenRouter, etc.).
 
-> 原始泄露源码无法直接运行。本仓库修复了启动链路中的多个阻塞问题，使完整的 Ink TUI 交互界面可以在本地工作。
+> The original leaked source cannot run directly. This repository fixes several blocking issues in the startup chain so that the full Ink TUI interface works locally.
 
 <p align="center">
-  <img src="docs/00runtime.png" alt="运行截图" width="800">
+  <img src="docs/00runtime.png" alt="Runtime screenshot" width="800">
 </p>
 
-## 功能
+## Features
 
-- 完整的 Ink TUI 交互界面（与官方 Claude Code 一致）
-- `--print` 无头模式（脚本/CI 场景）
-- 支持 MCP 服务器、插件、Skills
-- 支持自定义 API 端点和模型
-- 降级 Recovery CLI 模式
+- Full Ink TUI interface (matching the official Claude Code)
+- `--print` headless mode (for scripts / CI scenarios)
+- Support for MCP servers, plugins, and Skills
+- Support for custom API endpoints and models
+- Fallback Recovery CLI mode
 
 ---
 
-## 架构概览
+## Architecture Overview
 
 <table>
   <tr>
-    <td align="center" width="25%"><img src="docs/01-overall-architecture.png" alt="整体架构"><br><b>整体架构</b></td>
-    <td align="center" width="25%"><img src="docs/02-request-lifecycle.png" alt="请求生命周期"><br><b>请求生命周期</b></td>
-    <td align="center" width="25%"><img src="docs/03-tool-system.png" alt="工具系统"><br><b>工具系统</b></td>
-    <td align="center" width="25%"><img src="docs/04-multi-agent.png" alt="多 Agent 架构"><br><b>多 Agent 架构</b></td>
+    <td align="center" width="25%"><img src="docs/01-overall-architecture.png" alt="Overall Architecture"><br><b>Overall Architecture</b></td>
+    <td align="center" width="25%"><img src="docs/02-request-lifecycle.png" alt="Request Lifecycle"><br><b>Request Lifecycle</b></td>
+    <td align="center" width="25%"><img src="docs/03-tool-system.png" alt="Tool System"><br><b>Tool System</b></td>
+    <td align="center" width="25%"><img src="docs/04-multi-agent.png" alt="Multi-Agent Architecture"><br><b>Multi-Agent Architecture</b></td>
   </tr>
   <tr>
-    <td align="center" width="25%"><img src="docs/05-terminal-ui.png" alt="终端 UI"><br><b>终端 UI</b></td>
-    <td align="center" width="25%"><img src="docs/06-permission-security.png" alt="权限与安全"><br><b>权限与安全</b></td>
-    <td align="center" width="25%"><img src="docs/07-services-layer.png" alt="服务层"><br><b>服务层</b></td>
-    <td align="center" width="25%"><img src="docs/08-state-data-flow.png" alt="状态与数据流"><br><b>状态与数据流</b></td>
+    <td align="center" width="25%"><img src="docs/05-terminal-ui.png" alt="Terminal UI"><br><b>Terminal UI</b></td>
+    <td align="center" width="25%"><img src="docs/06-permission-security.png" alt="Permissions & Security"><br><b>Permissions & Security</b></td>
+    <td align="center" width="25%"><img src="docs/07-services-layer.png" alt="Services Layer"><br><b>Services Layer</b></td>
+    <td align="center" width="25%"><img src="docs/08-state-data-flow.png" alt="State & Data Flow"><br><b>State & Data Flow</b></td>
   </tr>
 </table>
 
 ---
 
-## 快速开始
+## Quick Start
 
-### 1. 安装依赖
+### 1. Install dependencies
 
-需要 [Bun](https://bun.sh) >= 1.1 和 Node.js >= 18。
+Requires [Bun](https://bun.sh) >= 1.1 and Node.js >= 18.
 
 ```bash
 npm install
 ```
 
-### 2. 配置环境变量
+### 2. Configure environment variables
 
-复制示例文件并填入你的 API Key：
+Copy the example file and fill in your API key:
 
 ```bash
 cp .env.example .env
 ```
 
-编辑 `.env`：
+Edit `.env`:
 
 ```env
-# API 认证（二选一）
-ANTHROPIC_API_KEY=sk-xxx          # 标准 API Key（x-api-key 头）
-ANTHROPIC_AUTH_TOKEN=sk-xxx       # Bearer Token（Authorization 头）
+# API authentication (choose one)
+ANTHROPIC_API_KEY=sk-xxx          # Standard API key (x-api-key header)
+ANTHROPIC_AUTH_TOKEN=sk-xxx       # Bearer token (Authorization header)
 
-# API 端点（可选，默认 Anthropic 官方）
+# API endpoint (optional, defaults to Anthropic official)
 ANTHROPIC_BASE_URL=https://api.minimaxi.com/anthropic
 
-# 模型配置
+# Model configuration
 ANTHROPIC_MODEL=MiniMax-M2.7-highspeed
 ANTHROPIC_DEFAULT_SONNET_MODEL=MiniMax-M2.7-highspeed
 ANTHROPIC_DEFAULT_HAIKU_MODEL=MiniMax-M2.7-highspeed
 ANTHROPIC_DEFAULT_OPUS_MODEL=MiniMax-M2.7-highspeed
 
-# 超时（毫秒）
+# Timeout (milliseconds)
 API_TIMEOUT_MS=3000000
 
-# 禁用遥测和非必要网络请求
+# Disable telemetry and non-essential network requests
 DISABLE_TELEMETRY=1
 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
-### 3. 启动
+### 3. Launch
 
 ```bash
-# 交互 TUI 模式（完整界面）
+# Interactive TUI mode (full interface)
 ./bin/claude-haha
 
-# 无头模式（单次问答）
+# Headless mode (single-shot Q&A)
 ./bin/claude-haha -p "your prompt here"
 
-# 管道输入
+# Pipe input
 echo "explain this code" | ./bin/claude-haha -p
 
-# 查看所有选项
+# View all options
 ./bin/claude-haha --help
 ```
 
 ---
 
-## 环境变量说明
+## Environment Variables
 
-| 变量 | 必填 | 说明 |
+| Variable | Required | Description |
 |------|------|------|
-| `ANTHROPIC_API_KEY` | 二选一 | API Key，通过 `x-api-key` 头发送 |
-| `ANTHROPIC_AUTH_TOKEN` | 二选一 | Auth Token，通过 `Authorization: Bearer` 头发送 |
-| `ANTHROPIC_BASE_URL` | 否 | 自定义 API 端点，默认 Anthropic 官方 |
-| `ANTHROPIC_MODEL` | 否 | 默认模型 |
-| `ANTHROPIC_DEFAULT_SONNET_MODEL` | 否 | Sonnet 级别模型映射 |
-| `ANTHROPIC_DEFAULT_HAIKU_MODEL` | 否 | Haiku 级别模型映射 |
-| `ANTHROPIC_DEFAULT_OPUS_MODEL` | 否 | Opus 级别模型映射 |
-| `API_TIMEOUT_MS` | 否 | API 请求超时，默认 600000 (10min) |
-| `DISABLE_TELEMETRY` | 否 | 设为 `1` 禁用遥测 |
-| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | 否 | 设为 `1` 禁用非必要网络请求 |
+| `ANTHROPIC_API_KEY` | One of two | API key, sent via the `x-api-key` header |
+| `ANTHROPIC_AUTH_TOKEN` | One of two | Auth token, sent via the `Authorization: Bearer` header |
+| `ANTHROPIC_BASE_URL` | No | Custom API endpoint, defaults to Anthropic official |
+| `ANTHROPIC_MODEL` | No | Default model |
+| `ANTHROPIC_DEFAULT_SONNET_MODEL` | No | Sonnet-tier model mapping |
+| `ANTHROPIC_DEFAULT_HAIKU_MODEL` | No | Haiku-tier model mapping |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL` | No | Opus-tier model mapping |
+| `API_TIMEOUT_MS` | No | API request timeout, defaults to 600000 (10 min) |
+| `DISABLE_TELEMETRY` | No | Set to `1` to disable telemetry |
+| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | No | Set to `1` to disable non-essential network requests |
 
 ---
 
-## 降级模式
+## Fallback Mode
 
-如果完整 TUI 出现问题，可以使用简化版 readline 交互模式：
+If the full TUI has problems, you can use the simplified readline interactive mode:
 
 ```bash
 CLAUDE_CODE_FORCE_RECOVERY_CLI=1 ./bin/claude-haha
@@ -124,58 +124,58 @@ CLAUDE_CODE_FORCE_RECOVERY_CLI=1 ./bin/claude-haha
 
 ---
 
-## 相对于原始泄露源码的修复
+## Fixes Relative to the Original Leaked Source
 
-泄露的源码无法直接运行，主要修复了以下问题：
+The leaked source cannot run directly. The following issues were fixed:
 
-| 问题 | 根因 | 修复 |
+| Issue | Root Cause | Fix |
 |------|------|------|
-| TUI 不启动 | 入口脚本把无参数启动路由到了 recovery CLI | 恢复走 `cli.tsx` 完整入口 |
-| 启动卡死 | `verify` skill 导入缺失的 `.md` 文件，Bun text loader 无限挂起 | 创建 stub `.md` 文件 |
-| `--print` 卡死 | `filePersistence/types.ts` 缺失 | 创建类型桩文件 |
-| `--print` 卡死 | `ultraplan/prompt.txt` 缺失 | 创建资源桩文件 |
-| **Enter 键无响应** | `modifiers-napi` native 包缺失，`isModifierPressed()` 抛异常导致 `handleEnter` 中断，`onSubmit` 永远不执行 | 加 try-catch 容错 |
-| setup 被跳过 | `preload.ts` 自动设置 `LOCAL_RECOVERY=1` 跳过全部初始化 | 移除默认设置 |
+| TUI does not start | The entry script routed parameter-less startup to the recovery CLI | Restored routing through the full `cli.tsx` entry |
+| Startup hangs | The `verify` skill imports a missing `.md` file, and Bun's text loader hangs indefinitely | Created stub `.md` files |
+| `--print` hangs | `filePersistence/types.ts` is missing | Created a type stub file |
+| `--print` hangs | `ultraplan/prompt.txt` is missing | Created a resource stub file |
+| **Enter key unresponsive** | The `modifiers-napi` native package is missing; `isModifierPressed()` throws, which interrupts `handleEnter` so `onSubmit` never runs | Added a try-catch fallback |
+| Setup is skipped | `preload.ts` automatically sets `LOCAL_RECOVERY=1`, skipping all initialization | Removed the default setting |
 
 ---
 
-## 项目结构
+## Project Structure
 
 ```
-bin/claude-haha          # 入口脚本
-preload.ts               # Bun preload（设置 MACRO 全局变量）
-.env.example             # 环境变量模板
+bin/claude-haha          # Entry script
+preload.ts               # Bun preload (sets MACRO global variables)
+.env.example             # Environment variable template
 src/
-├── entrypoints/cli.tsx  # CLI 主入口
-├── main.tsx             # TUI 主逻辑（Commander.js + React/Ink）
-├── localRecoveryCli.ts  # 降级 Recovery CLI
-├── setup.ts             # 启动初始化
-├── screens/REPL.tsx     # 交互 REPL 界面
-├── ink/                 # Ink 终端渲染引擎
-├── components/          # UI 组件
-├── tools/               # Agent 工具（Bash, Edit, Grep 等）
-├── commands/            # 斜杠命令（/commit, /review 等）
-├── skills/              # Skill 系统
-├── services/            # 服务层（API, MCP, OAuth 等）
+├── entrypoints/cli.tsx  # CLI main entry
+├── main.tsx             # TUI main logic (Commander.js + React/Ink)
+├── localRecoveryCli.ts  # Fallback Recovery CLI
+├── setup.ts             # Startup initialization
+├── screens/REPL.tsx     # Interactive REPL interface
+├── ink/                 # Ink terminal rendering engine
+├── components/          # UI components
+├── tools/               # Agent tools (Bash, Edit, Grep, etc.)
+├── commands/            # Slash commands (/commit, /review, etc.)
+├── skills/              # Skill system
+├── services/            # Services layer (API, MCP, OAuth, etc.)
 ├── hooks/               # React hooks
-└── utils/               # 工具函数
+└── utils/               # Utility functions
 ```
 
 ---
 
-## 技术栈
+## Tech Stack
 
-| 类别 | 技术 |
+| Category | Technology |
 |------|------|
-| 运行时 | [Bun](https://bun.sh) |
-| 语言 | TypeScript |
-| 终端 UI | React + [Ink](https://github.com/vadimdemedes/ink) |
-| CLI 解析 | Commander.js |
+| Runtime | [Bun](https://bun.sh) |
+| Language | TypeScript |
+| Terminal UI | React + [Ink](https://github.com/vadimdemedes/ink) |
+| CLI parsing | Commander.js |
 | API | Anthropic SDK |
-| 协议 | MCP, LSP |
+| Protocols | MCP, LSP |
 
 ---
 
 ## Disclaimer
 
-本仓库基于 2026-03-31 从 Anthropic npm registry 泄露的 Claude Code 源码。所有原始源码版权归 [Anthropic](https://www.anthropic.com) 所有。仅供学习和研究用途。
+This repository is based on the Claude Code source code leaked from the Anthropic npm registry on 2026-03-31. All original source code is copyright [Anthropic](https://www.anthropic.com). For learning and research purposes only.
